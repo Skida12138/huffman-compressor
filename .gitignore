@@ -1,2 +1,5 @@
-*.exe
-DS_Store
+/bin/
+! /bin/.gitkeep
+.DS_Store
+/test/*.ext.txt
+/test/*.huff

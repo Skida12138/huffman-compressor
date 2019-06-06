@@ -104,7 +104,7 @@ func updNode(node *TreeNode) {
     priorityqueue.ShiftDown(fields[node.Weight], 0)
     fallthrough
   default:
-    if node.Id == fields[node.Weight][0].Id {
+    if fields[node.Weight].Len() > 0 && node.Id == fields[node.Weight][0].Id {
       fields[node.Weight].Swap(0, fields[node.Weight].Len()-1)
       fields[node.Weight] = fields[node.Weight][:fields[node.Weight].Len()-1]
       priorityqueue.ShiftDown(fields[node.Weight], 0)
