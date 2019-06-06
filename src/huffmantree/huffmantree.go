@@ -9,7 +9,7 @@ import (
 type TreeNode struct {
   Weight uint64
   Value byte
-  Id byte
+  Id uint16
   Child0 *TreeNode
   Child1 *TreeNode
   Parent *TreeNode
@@ -42,7 +42,7 @@ func (que TreeNodeQue) Len() int {
 var fields = make(map[uint64]TreeNodeQue)
 
 var creaNode = func() func(*TreeNode, *TreeNode, *TreeNode) *TreeNode {
-  idCounter := byte(0)
+  idCounter := uint16(0)
   return func(child0, child1, parent *TreeNode) *TreeNode {
     newNode := TreeNode { 1, 0, idCounter, child0, child1, parent }
     if field, ok := fields[1]; ok {
@@ -59,13 +59,13 @@ var creaNode = func() func(*TreeNode, *TreeNode, *TreeNode) *TreeNode {
 
 func updNode(node *TreeNode) {
   switch {
-  case node.Id == 255:
+  case node.Id == 65535:
     parent := creaNode(node, nil, node.Parent)
     child1 := creaNode(nil, nil, parent)
     node.Parent = parent
     parent.Child1 = child1
     if parent.Parent != nil {
-      if parent.Parent.Child0.Id == 255 {
+      if parent.Parent.Child0.Id == 65535 {
         parent.Parent.Child0 = parent
         updNode(parent.Parent)
       } else {
@@ -126,7 +126,7 @@ func outputNode(node *TreeNode) {
 }
 
 func Compress(cont []byte) []byte {
-  nyt := TreeNode { 0, 0, 255, nil, nil, nil }
+  nyt := TreeNode { 0, 0, 65535, nil, nil, nil }
   vised := make(map[byte]*TreeNode)
   tot := len(cont)
   for prog, val := range(cont) {
@@ -147,7 +147,7 @@ func Compress(cont []byte) []byte {
 }
 
 func Decompress(cont []byte) []byte {
-  root := &TreeNode { 0, 0, 255, nil, nil, nil }
+  root := &TreeNode { 0, 0, 65535, nil, nil, nil }
   res := make([]byte, 0, 1024)
   curNode := root
   bitbuf.PushBuf(cont)
@@ -155,12 +155,12 @@ func Decompress(cont []byte) []byte {
   tot := len(cont)
   for {
     fmt.Printf("\rExtracting file...%d%% finished", prog*25/tot/2)
-    if curNode.Id == 255 {
+    if curNode.Id == 65535 {
       word := bitbuf.ReadByte()
       res = append(res, word)
       prog += 8
       updNode(curNode)
-      if root.Id == 255 {
+      if root.Id == 65535 {
         root = root.Parent
       }
       curNode.Parent.Child1.Value = word
