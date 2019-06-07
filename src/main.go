@@ -31,8 +31,10 @@ func main() {
 	}
 	var processed []byte
 	if *ext {
+		fmt.Println("Extracting file", *src)
 		processed = huffmantree.Decompress(fileCont)
 	} else {
+		fmt.Println("Compressing file", *src)
 		processed = huffmantree.Compress(fileCont)
 	}
 	if err = ioutil.WriteFile(*dst, processed, 0777); err != nil {

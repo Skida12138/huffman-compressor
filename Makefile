@@ -1,4 +1,6 @@
 GO = go
+RM = rm -rf
+CP = cp -t
 GOFLAGS = -v
 GOBUILD = $(GO) build
 BIN_DIR = ./bin
@@ -11,19 +13,25 @@ BIN = $(BIN_DIR)/$(BIN_NAME)
 
 TESTS = $(wildcard $(TEST_DIR)/*)
 
-.PHONY: build clean test
+SHELL = /bin/bash
+INSTALL_PREFIX = /usr/local
+
+.PHONY: build clean test install
 
 build:
 	$(GOBUILD) -o $(BIN) $(GOFLAGS) $(SRC_DIR)
 
 clean:
-	rm -rf $(BIN_DIR)/*
-	rm -rf $(TEST_DIR)/*.huff
-	rm -rf $(TEST_DIR)/*.ext.*
+	$(RM) $(BIN_DIR)/*
+	$(RM) $(TEST_DIR)/*.huff
+	$(RM) $(TEST_DIR)/*.ext.*
 
 test:
-	$(foreach test, $(TESTS), $(BIN) -src $(test) -dst $(test).huff)
-	$(foreach test, $(TESTS), $(BIN) -ext -src $(test).huff -dst $(basename $(test)).ext$(suffix $(test)))
-	$(foreach test, $(TESTS), if diff $(test) $(basename $(test)).ext$(suffix $(test));\
-														then echo "Test case $(basename $(notdir $(test))) passed";\
-														else echo "Test case $(basename $(notdir $(test))) faild"; fi;)
+	@./runtest.sh
+
+install:
+	make build
+	$(CP) $(INSTALL_PREFIX)/bin $(BIN)
+
+uninstall:
+	$(RM) $(INSTALL_PREFIX)/bin/$(BIN_NAME)
