@@ -20,5 +20,5 @@ jobs:
       id: env
 
     - name: Test
-      run: make build
+      run: make
       
